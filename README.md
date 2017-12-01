@@ -9,14 +9,14 @@ LoanAPound is a new online loan broker looking to launch in the next few weeks. 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ```
-#### MySQL Server
+### MySQL Server
 
  [Download](https://dev.mysql.com/downloads/installer/) - MySQL installer
  Installer which deals with installation and configuration
 ```
 
 ```
-#### Apache Maven
+### Apache Maven
 
  [Download](https://maven.apache.org/download.cgi) - Maven zip download
  [Installation](https://maven.apache.org/install.html) - Maven instalation instructions
@@ -24,19 +24,19 @@ These instructions will get you a copy of the project up and running on your loc
 ```
 
 ```
-#### Apache Tomcat
+## Apache Tomcat
  Used for the mock credit score API
 
  [Download](https://tomcat.apache.org/download-70.cgi) - Tomcat download
  Installer which deals with installation and configuration
 ```
 
-### Installing
+## Installing
 
 A step by step series of examples that tell you have to get a test env running
 
 ```
-#### Database Setup
+### Database Setup
  All the scripts to build the database are in ./database/tables and ./database/views, however I have included an export of the full schema to make it easier to run.
  The commands are set to use the root user but this can be changed for any user who can create users and schemas;
 
@@ -47,14 +47,14 @@ A step by step series of examples that tell you have to get a test env running
 ```
 
 ```
-#### Java compilation
+### Java compilation
  Java complilation is done using Maven. There is a parent pom file in the root of the repository which compiles everything.
  
  * mvn clean package
 ```
 
 ```
-#### CreditScoreAPI deployment
+### CreditScoreAPI deployment
  The API will have been packed into a war file. This can be found in ./CreditScoreAPI/target/CreditScoreAPI-1.0.war
  
  This war file needs to be deployed in Tomcat. To be safe I would recommend stopping the server before deployment and this can be done by going to %TOMCAT_HOME%/bin/shutdown.bat.
@@ -65,7 +65,7 @@ A step by step series of examples that tell you have to get a test env running
 ```
 
 ```
-#### Loan Engine
+### Loan Engine
  The loan engine does not output to a console, so we can just start it using a javaw command;
 
  cd ./SageLoanAPoundLoanEngine/target
@@ -73,7 +73,7 @@ A step by step series of examples that tell you have to get a test env running
 ```
 
 ```
-#### Front End
+### Front End
  There is a (very) basic front end which users can use to interact with the database. This is produced by a java console.
 
  cd ./SageLoanAPound/target
