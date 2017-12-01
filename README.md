@@ -10,23 +10,25 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### MySQL Server
 
- [Download](https://dev.mysql.com/downloads/installer/) - MySQL installer
- Installer which deals with installation and configuration
+* [Download](https://dev.mysql.com/downloads/installer/) - MySQL installer
+
+Installer which deals with installation and configuration
 
 
 ### Apache Maven
 
- [Download](https://maven.apache.org/download.cgi) - Maven zip download
- [Installation](https://maven.apache.org/install.html) - Maven instalation instructions
- [Configuration](https://maven.apache.org/configure.html) - Maven configuration instructions
+* [Download](https://maven.apache.org/download.cgi) - Maven zip download
+* [Installation](https://maven.apache.org/install.html) - Maven instalation instructions
+* [Configuration](https://maven.apache.org/configure.html) - Maven configuration instructions
 
 
 ### Apache Tomcat
 
  Used for the mock credit score API
 
- [Download](https://tomcat.apache.org/download-70.cgi) - Tomcat download
- Installer which deals with installation and configuration
+* [Download](https://tomcat.apache.org/download-70.cgi) - Tomcat download
+ 
+Installer which deals with installation and configuration
 
 
 ## Installing
