@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>SageLoanAPoundLoanEngine</groupId>
+  <artifactId>SageLoanAPoundLoanEngine</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>LoanEngine</name>
+  <description>Sage loan engine test loan engine</description>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.6.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <archive>
+          	<manifest>
+          		<mainClass>com.fairsail.loanEngine.LoanEngine</mainClass>
+          	</manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+  	<dependency>
+    	<groupId>javax.mail</groupId>
+    	<artifactId>mail</artifactId>
+    	<version>1.4</version>
+	</dependency>
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.12</version>
+		<exclusions>
+			<exclusion>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-core</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>org.hamcrest</groupId>
+		<artifactId>hamcrest-library</artifactId>
+		<version>1.3</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.fairsail</groupId>
+	    <artifactId>SageLoanAPoundServiceLayer</artifactId>
+	    <version>1.0</version>
+	    <scope>system</scope>
+	    <systemPath>C:\Users\Lucas\git\SageLoanAPoundServiceLayer\target\SageLoanAPoundServiceLayer-0.0.1-SNAPSHOT.jar</systemPath>
+</dependency>
+  </dependencies>
+</project>
