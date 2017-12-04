@@ -107,7 +107,7 @@ public class PersonalLoanDao {
 					+ loan.getMinimumValue() + ", "
 					+ loan.getMaximumValue() + ", "
 					+ loan.getInterestRate() + ", "
-					+ loan.getCreditScoreRule() + ", "
+					+ "'" + loan.getCreditScoreRule() + "', "
 					+ loan.getMinimumCreditScore()
 				+ ")";
 		

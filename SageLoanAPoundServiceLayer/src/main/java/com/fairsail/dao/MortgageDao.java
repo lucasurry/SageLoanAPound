@@ -112,6 +112,7 @@ public class MortgageDao {
 					+ "minimum_deposit, " 
 					+ "minimum_credit_score, " 
 					+ "fees, " 
+					+ "rule, "
 					+ "first_time_buyer_only"
 				+ ") VALUES ("
 					+ "'" + mortgage.getLender() + "', "
@@ -123,6 +124,7 @@ public class MortgageDao {
 					+ mortgage.getMinimumDeposit() + ", "
 					+ mortgage.getMinimumCreditScore() + ", "
 					+ mortgage.getFees() + ", "
+					+ "'" + mortgage.getCreditScoreRule() + "', "
 					+ mortgage.isFirstTimeBuyerOnly()
 				+ ")";
 		

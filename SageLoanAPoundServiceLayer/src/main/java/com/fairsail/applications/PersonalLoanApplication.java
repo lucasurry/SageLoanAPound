@@ -1,14 +1,12 @@
 package com.fairsail.applications;
 
-import com.fairsail.accounts.Applicant;
-
 public class PersonalLoanApplication extends Application {
 	private int loanId;
 	
 	public PersonalLoanApplication() {}
 	
-	public PersonalLoanApplication(Applicant applicant, int loanId) {
-		setApplicant(applicant);
+	public PersonalLoanApplication(int applicantId, int loanId) {
+		this.setApplicantId(applicantId);
 		this.loanId = loanId;
 	}
 	public int getLoanId() {

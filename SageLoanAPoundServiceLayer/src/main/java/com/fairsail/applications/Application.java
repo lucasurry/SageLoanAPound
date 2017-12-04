@@ -1,9 +1,6 @@
 package com.fairsail.applications;
 
-import com.fairsail.accounts.Applicant;
-
 public class Application {
-	private Applicant applicant;
 	private int applicantId;
 	private int applicationId;
 	private double loanValue = 0;
@@ -12,13 +9,6 @@ public class Application {
 
 	public Application() {}
 
-	public Applicant getApplicant() {
-		return applicant;
-	}
-
-	public void setApplicant(Applicant applicant) {
-		this.applicant = applicant;
-	}
 
 	public int getApplicantId() {
 		return applicantId;

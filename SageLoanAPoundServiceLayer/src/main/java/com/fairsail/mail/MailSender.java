@@ -4,13 +4,21 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import com.fairsail.applications.Application;
+import com.fairsail.applications.PersonalLoanApplication;
+import com.fairsail.dao.DatabaseQueryExecutor;
+import com.fairsail.exceptions.NoResultsFoundException;
+import com.fairsail.service.ApplicationService;
 
 public class MailSender {
 
@@ -19,6 +27,15 @@ public class MailSender {
 	private Properties props;
 	private Session session;
 
+	public static void main(String args[]) throws SQLException, NoResultsFoundException {
+		DatabaseQueryExecutor dqe = new DatabaseQueryExecutor("application","apppass","localhost", "loanapound");
+		ApplicationService a = new ApplicationService(dqe);
+		List<PersonalLoanApplication> apps = a.getLoanApplications("C");
+		Application app = apps.get(0);
+		System.out.println(Integer.toString(app.getCreditScoreUsed()));
+		
+	}
+	
 	// If using an online mail system we may need to log in so get credentials
 	private String userName = null;
 	private String password = null;

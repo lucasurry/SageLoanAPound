@@ -26,12 +26,12 @@ public class LoginService {
 	 * @throws NoResultsFoundException 
 	 * @throws LoginUnsucessfulException 
 	 */
-	
 	public User checkCredentials(String userName, String password) throws SQLException, NoResultsFoundException, LoginUnsucessfulException {
 		// Really not how to do it!
 		String correctPassword = userDao.getUserPassword(userName);
 		
 		if(password.equals(correctPassword)) {
+			// Depending on the user type value in the database return a User of the correct type
 			switch(userDao.getUserType(userName)) {
 				case "A" 		: return userDao.selectAdministrator(userName);
 				case "B" 		: return userDao.selectApplicant(userName);

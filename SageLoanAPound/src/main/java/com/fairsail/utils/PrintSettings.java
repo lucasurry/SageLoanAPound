@@ -4,7 +4,7 @@ import java.io.Console;
 import java.io.IOException;
 import java.util.List;
 
-public class GlobalSettings {
+public class PrintSettings {
 	
 	// Set up the console once so we don't have to pass it about
 	public static final Console CONSOLE = System.console();

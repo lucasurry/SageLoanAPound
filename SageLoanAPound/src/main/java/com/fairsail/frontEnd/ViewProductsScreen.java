@@ -11,21 +11,35 @@ import com.fairsail.loan.Mortgage;
 import com.fairsail.loan.PersonalLoan;
 import com.fairsail.service.MortgageService;
 import com.fairsail.service.PersonalLoanService;
-import com.fairsail.utils.GlobalSettings;
+import com.fairsail.utils.PrintSettings;
 
 public class ViewProductsScreen {
 	
 	private MortgageService mService;
 	private PersonalLoanService pService;
 	
+	/**
+	 * Displays screens used to see what products exist for administrators and applicants. 
+	 * 
+	 * @param mService
+	 * @param pService
+	 */
 	public ViewProductsScreen (MortgageService mService, PersonalLoanService pService) {
 		this.mService = mService;
 		this.pService = pService;
 	}
 	
+	/**
+	 * Produces a screen which is a menu to choose what product type to view
+	 * 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws SQLException
+	 */
 	public void viewProducts() throws IOException, InterruptedException, SQLException {
 		boolean isNotBack = true;
 		
+		// Loop until the user wants to go back
 		while(isNotBack) {
 			// Print the screen title
 			List<String> title = new ArrayList<String>();
@@ -35,42 +49,52 @@ public class ViewProductsScreen {
 			title.add("  1) View mortgages\n");
 			title.add("  2) View loans\n");
 			title.add("\nType back to return to the previous screen\n");
-			GlobalSettings.printScreenTitle(title);
+			PrintSettings.printScreenTitle(title);
 			
-			String input = GlobalSettings.CONSOLE.readLine("Enter your selection : \n");
+			String input = PrintSettings.CONSOLE.readLine("Enter your selection : \n");
 			
+			// Check the user input
 			switch(input) {
 				case "1"		: viewMortgages();
-								  GlobalSettings.CONSOLE.readLine("Press the return key to continue");
+								  PrintSettings.CONSOLE.readLine("Press the return key to continue");
 								  break;
 				case "2"		: viewLoans();
-								  GlobalSettings.CONSOLE.readLine("Press the return key to continue");
+								  PrintSettings.CONSOLE.readLine("Press the return key to continue");
 				                  break;
 				case "back"		: isNotBack = false;
 								  break;
-				default 		: GlobalSettings.CONSOLE.printf(input + " is not a valid option\n");
-								  GlobalSettings.CONSOLE.readLine("Press the return key to continue");
+				default 		: PrintSettings.CONSOLE.printf(input + " is not a valid option\n");
+								  PrintSettings.CONSOLE.readLine("Press the return key to continue");
 			}
 		}
 	}
 	
+	/**
+	 * Displays a screen which is a table of all mortgages which an applicant can apply for
+	 * 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws SQLException
+	 */
 	public void viewMortgages() throws IOException, InterruptedException, SQLException {
 		Map<Integer, Mortgage> mortgages;
 		
 		// Print the screen title
 		List<String> title = new ArrayList<String>();
 		title.add("Advailable mortgages\n\n");
-		GlobalSettings.printScreenTitle(title);
+		PrintSettings.printScreenTitle(title);
 		
 		try {
 			mortgages = mService.getMortgages();
 			
-			// Set the format so that we can print a table
+			// Set the format so that we can print a table of mortgages
 			String format = "|%5s|%20s|%18s|%14s|%8s|%5s|%10s|%10s|\n";
 			
-			GlobalSettings.CONSOLE.printf(format.replace("%", "%-"), "ID", "Lender", "No. of Repayments", "Min Deposit", "Fees", "Rate", "Min Value", "Max Value");
-			GlobalSettings.CONSOLE.printf(format, "----", "-------------------", "-----------------", "-------------", "-------", "----", "---------", "---------");
+			// Add the table headers
+			PrintSettings.CONSOLE.printf(format.replace("%", "%-"), "ID", "Lender", "No. of Repayments", "Min Deposit", "Fees", "Rate", "Min Value", "Max Value");
+			PrintSettings.CONSOLE.printf(format, "----", "-------------------", "-----------------", "-------------", "-------", "----", "---------", "---------");
 			
+			// Loop through all the mortgages and add them to the table
 			for(int mortageId : mortgages.keySet()){
 				Mortgage mortgage = mortgages.get(mortageId);
 				
@@ -91,21 +115,29 @@ public class ViewProductsScreen {
 				String maxVal = "£" + Double.toString(mortgage.getMaximumValue());
 				
 				
-				GlobalSettings.CONSOLE.printf(format, id, lender, repaymentMonths, minDeposit, fees, rate, minVal, maxVal);
+				PrintSettings.CONSOLE.printf(format, id, lender, repaymentMonths, minDeposit, fees, rate, minVal, maxVal);
 				
 			}
 		}catch (NoResultsFoundException e) {
-			GlobalSettings.CONSOLE.printf("No mortgages could be found in the system");
+			PrintSettings.CONSOLE.printf("No mortgages could be found in the system");
+			PrintSettings.CONSOLE.readLine("Press the return key to continue");
 		}
 	}
 	
+	/**
+	 * Displays a screen which is a table of all personal loans which an applicant can apply for
+	 * 
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws SQLException
+	 */
 	public void viewLoans() throws IOException, InterruptedException, SQLException {
 		Map<Integer, PersonalLoan> personalLoans;
 		
 		// Print the screen title
 		List<String> title = new ArrayList<String>();
 		title.add("Advailable loans\n\n");
-		GlobalSettings.printScreenTitle(title);
+		PrintSettings.printScreenTitle(title);
 
 		try{
 			personalLoans = pService.getPersonalLoans();
@@ -114,10 +146,11 @@ public class ViewProductsScreen {
 				// Set the format so that we can print a table
 				String format = "|%5s|%20s|%18s|%5s|%10s|%10s|\n";
 				
-				// add the table headers
-				GlobalSettings.CONSOLE.printf(format.replace("%", "%-"), "ID", "Lender", "No. of Repayments", "Rate", "Min Value", "Max Value");
-				GlobalSettings.CONSOLE.printf(format, "----", "-------------------", "-----------------", "----", "---------", "---------");
+				// Add the table headers
+				PrintSettings.CONSOLE.printf(format.replace("%", "%-"), "ID", "Lender", "No. of Repayments", "Rate", "Min Value", "Max Value");
+				PrintSettings.CONSOLE.printf(format, "----", "-------------------", "-----------------", "----", "---------", "---------");
 			
+				// Loop through all the personal loans and add them to the table
 				for(int loanId : personalLoans.keySet()) {
 					PersonalLoan loan = personalLoans.get(loanId);
 						
@@ -128,11 +161,12 @@ public class ViewProductsScreen {
 					String minVal = "£" + Double.toString(loan.getMinimumValue());
 					String maxVal = "£" + Double.toString(loan.getMaximumValue());
 					
-					GlobalSettings.CONSOLE.printf(format, id, lender, repaymentMonths, rate, minVal, maxVal);
+					PrintSettings.CONSOLE.printf(format, id, lender, repaymentMonths, rate, minVal, maxVal);
 				}
 			}
 		}catch (NoResultsFoundException e) {
-			GlobalSettings.CONSOLE.printf("No mortgages could be found in the system");
+			PrintSettings.CONSOLE.printf("No mortgages could be found in the system");
+			PrintSettings.CONSOLE.readLine("Press the return key to continue");
 		}
 	}
 }

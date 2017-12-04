@@ -16,7 +16,7 @@ import com.fairsail.loan.PersonalLoan;
 import com.fairsail.service.ApplicationService;
 import com.fairsail.service.MortgageService;
 import com.fairsail.service.PersonalLoanService;
-import com.fairsail.utils.GlobalSettings;
+import com.fairsail.utils.PrintSettings;
 
 public class ApplicantScreen {
 	
@@ -25,6 +25,11 @@ public class ApplicantScreen {
 	private ApplicationService aService;
 	private ViewProductsScreen vps;
 	
+	/**
+	 * Displays the screen for applicants. Allows them to view existing products, create applications for these products or view the state of applications which they have raised in the past.
+	 * 
+	 * @param DatabaseQueryExecutor
+	 */
 	public ApplicantScreen(DatabaseQueryExecutor dqe) {
 		mService = new MortgageService(dqe);
 		pService = new PersonalLoanService(dqe);
@@ -33,6 +38,14 @@ public class ApplicantScreen {
 		vps = new ViewProductsScreen(mService, pService);
 	}
 	
+	/**
+	 * Display the main menu for an applicant user
+	 * 
+	 * @param Applicant currentUser
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws SQLException
+	 */
 	public void applicantScreen(Applicant currentUser) throws IOException, InterruptedException, SQLException {
 		boolean isLoggedIn = true;
 		
@@ -46,31 +59,41 @@ public class ApplicantScreen {
 			title.add("  2) Apply for a product\n");
 			title.add("  3) View existing application status\n");
 			title.add("\nType logout to exit\n");
-			GlobalSettings.printScreenTitle(title);
+			PrintSettings.printScreenTitle(title);
 		
-			String input = GlobalSettings.CONSOLE.readLine("Enter your selection : \n");
+			String input = PrintSettings.CONSOLE.readLine("Enter your selection : \n");
 			
+			// Check their input
 			switch(input) {
 				case "1"		: vps.viewProducts();
 								  break;
 				case "2"		: applicationScreen(currentUser);
 								  break;
 				case "3"		: viewPreviousApplicationsScreen(currentUser);
-								  GlobalSettings.CONSOLE.readLine("Press the return key to continue");
+								  PrintSettings.CONSOLE.readLine("Press the return key to continue");
 								  break;
 				case "logout"	: isLoggedIn = false;
 								  break;
-				default 		: GlobalSettings.CONSOLE.printf(input + " is not a valid option\n");
-								  GlobalSettings.CONSOLE.readLine("Press the return key to continue");
+				default 		: PrintSettings.CONSOLE.printf(input + " is not a valid option\n");
+								  PrintSettings.CONSOLE.readLine("Press the return key to continue");
 			}
 		}
 	}
 	
+	/**
+	 * Display a screen which the applicant can use to choose a type of product they want to create an application for
+	 * 
+	 * @param Applicant currentUser
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws SQLException
+	 */
 	private void applicationScreen(Applicant currentUser) throws IOException, InterruptedException, SQLException {
 		boolean isNotBack = true;
 		
-		// Print the screen title
+		// Loop until valid input
 		while(isNotBack) {
+			// Print the screen title
 			List<String> title = new ArrayList<String>();
 			title.add("Create a new product\n\n");
 			title.add("----------------------------------------\n\n");
@@ -78,10 +101,11 @@ public class ApplicantScreen {
 			title.add("  1) Apply for a mortgage\n");
 			title.add("  2) Apply for a loan\n");
 			title.add("\nType back to return to previous screen\n");
-			GlobalSettings.printScreenTitle(title);
+			PrintSettings.printScreenTitle(title);
 			
-			String input = GlobalSettings.CONSOLE.readLine("Enter your selection : \n");
+			String input = PrintSettings.CONSOLE.readLine("Enter your selection : \n");
 			
+			// Check the user input
 			switch(input) {
 				case "1"		: applyForMortgageScreen(currentUser);
 								  break;
@@ -89,94 +113,132 @@ public class ApplicantScreen {
 								  break;
 				case "back"		: isNotBack = false;
 								  break;
-				default 		: GlobalSettings.CONSOLE.printf(input + " is not a valid option\n");
-								  GlobalSettings.CONSOLE.readLine("Press the return key to continue");
+				default 		: PrintSettings.CONSOLE.printf(input + " is not a valid option\n");
+								  PrintSettings.CONSOLE.readLine("Press the return key to continue");
 			}
 		}
 	}
 	
+	/**
+	 * Display a screen which the applicant can use to create an application for a mortgage
+	 * 
+	 * @param Applicant currentUser
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws SQLException
+	 */
 	private void applyForMortgageScreen(Applicant currentUser) throws IOException, InterruptedException, SQLException {
 		boolean isValid = false;
 		int mortgageId = 0;
 		String input = null;
 		
+		// Loop until there is a valid input
 		while(!isValid) {
 			try {
-			Map<Integer, Mortgage> mortgages = mService.getMortgages();
-			vps.viewMortgages();
-			
-			try {
-				GlobalSettings.CONSOLE.printf("To go back without applying for a mortgage type back\n");
-				input = GlobalSettings.CONSOLE.readLine("Please enter the id of the mortgage you wish to apply for : \n");
+				// View the existing mortgage products so that the user can see the id of the mortgage they want to apply for
+				Map<Integer, Mortgage> mortgages = mService.getMortgages();
+				vps.viewMortgages();
 				
-				if(input.equals("back")) {
-					return;
+				try {
+					PrintSettings.CONSOLE.printf("To go back without applying for a mortgage type back\n");
+					input = PrintSettings.CONSOLE.readLine("Please enter the id of the mortgage you wish to apply for : \n");
+					
+					// If input is back don't apply for anything
+					if(input.equals("back")) {
+						return;
+					}
+					
+					mortgageId = Integer.parseInt(input);
+					
+					// Check the mortgages to find the one which the user has entered the id for
+					if(mortgages.containsKey(mortgageId)) {
+						MortgageApplication application = new MortgageApplication(currentUser.getUserId(), mortgageId);
+						// Get the information (value they want to borrow etc.) from the user and create the application in the database
+						aService.createNewMortgageApplication(new ApplicationInputChecker().mortgageApplicationInputChecker(application));
+						isValid = true;
+					}else {
+						// If the id is not found in the list of mortgages then say this and start again
+						PrintSettings.CONSOLE.printf(input + " was not found in the list of id's, please enter a valid id\n");
+						PrintSettings.CONSOLE.readLine("Press the return key to continue");
+					}
+				}catch(NumberFormatException e) {
+					// If the input was not a number it isn't valid
+					PrintSettings.CONSOLE.printf(input + " is not a valid id, please enter a valid id\n");
+					PrintSettings.CONSOLE.readLine("Press the return key to continue");
 				}
-				
-				mortgageId = Integer.parseInt(input);
-				
-				if(mortgages.containsKey(mortgageId)) {
-					MortgageApplication application = new MortgageApplication(currentUser, mortgageId);
-					aService.createNewMortgageApplication(new ApplicationInputChecker().mortgageApplicationInputChecker(application));
-					isValid = true;
-				}else {
-					GlobalSettings.CONSOLE.printf(input + " was not found in the list of id's, please enter a valid id\n");
-					GlobalSettings.CONSOLE.readLine("Press the return key to continue");
-				}
-			}catch(NumberFormatException e) {
-				GlobalSettings.CONSOLE.printf(input + " is not a valid id, please enter a valid id\n");
-				GlobalSettings.CONSOLE.readLine("Press the return key to continue");
-			}
 			}catch(NoResultsFoundException e){
 				// If no mortgages are found display a message then go back to the previous screen
-				GlobalSettings.CONSOLE.printf("Either there are no mortgages or you were not found to be eligible for any of the mortgages that were found\n");
-				GlobalSettings.CONSOLE.readLine("Press the return key to continue");
+				PrintSettings.CONSOLE.printf("No mortgages could be found to apply for\n");
+				PrintSettings.CONSOLE.readLine("Press the return key to continue");
 				return;
 			}
 		}
 	}
 	
+	/**
+	 * Display a screen which the applicant can use to create an application for a personal loan
+	 * 
+	 * @param Applicant currentUser
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws SQLException
+	 */
 	private void applyForPersonalLoanScreen(Applicant currentUser) throws IOException, InterruptedException, SQLException {
 		boolean isValid = false;
 		int loanId = 0;
 		String input = null;
 		
+		// Loop until there is a valid input
 		while(!isValid) {
 			try {
+				// View the existing personal loan products so that the user can see the id of the personal loan they want to apply for
 				Map<Integer, PersonalLoan> loans = pService.getPersonalLoans();
 				vps.viewLoans();
 				
 				try {
-					GlobalSettings.CONSOLE.printf("To go back without applying for a loan type back\n");
-					input = GlobalSettings.CONSOLE.readLine("Please enter the id of the loan you wish to apply for : \n");
+					PrintSettings.CONSOLE.printf("To go back without applying for a loan type back\n");
+					input = PrintSettings.CONSOLE.readLine("Please enter the id of the loan you wish to apply for : \n");
 					
+					// If input is back don't apply for anything
 					if(input.equalsIgnoreCase("back")) {
 						return;
 					}
 					
 					loanId = Integer.parseInt(input);
 					
+					// Check the personal loan to find the one which the user has entered the id for
 					if(loans.containsKey(loanId)) {
-						PersonalLoanApplication application = new PersonalLoanApplication(currentUser, loanId);
+						PersonalLoanApplication application = new PersonalLoanApplication(currentUser.getUserId(), loanId);
+						// Get the information (value they want to borrow etc.) from the user and create the application in the database
 						aService.createNewPersonalLoanApplication(new ApplicationInputChecker().personalLoanApplicationInputChecker(application));
 						isValid = true;
 					}else {
-						GlobalSettings.CONSOLE.printf(input + " was not found in the list of id's, please enter a valid id\n");
-						GlobalSettings.CONSOLE.readLine("Press the return key to continue");
+						// If the id is not found in the list of personal loans then say this and start again
+						PrintSettings.CONSOLE.printf(input + " was not found in the list of id's, please enter a valid id\n");
+						PrintSettings.CONSOLE.readLine("Press the return key to continue");
 					}
 				}catch(NumberFormatException e) {
-					GlobalSettings.CONSOLE.printf(input + " is not a valid id, please enter a valid id\n");
-					GlobalSettings.CONSOLE.readLine("Press the return key to continue");
+					// If the input was not a number it isn't valid
+					PrintSettings.CONSOLE.printf(input + " is not a valid id, please enter a valid id\n");
+					PrintSettings.CONSOLE.readLine("Press the return key to continue");
 				}
 			}catch(NoResultsFoundException e){
 				// If no personal loans are found display a message then go back to the previous screen
-				GlobalSettings.CONSOLE.printf("Either there are no personal loans or you were not found to be eligible for any of the personal loans that were found\n");
-				GlobalSettings.CONSOLE.readLine("Press the return key to continue");
+				PrintSettings.CONSOLE.printf("No personal loans  could be found to apply for\n");
+				PrintSettings.CONSOLE.readLine("Press the return key to continue");
 				return;
 			}
 		}
 	}
 	
+	/**
+	 * Display a screen which the applicant can use to view previous applications they have created in the past
+	 * 
+	 * @param Applicant currentUser
+	 * @throws SQLException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	private void viewPreviousApplicationsScreen(Applicant currentUser) throws SQLException, IOException, InterruptedException {
 		List<PersonalLoanApplication> loanApplications;
 		List<MortgageApplication> mortgageApplications;
@@ -184,18 +246,21 @@ public class ApplicantScreen {
 		// Print the screen title
 		List<String> title = new ArrayList<String>();
 		title.add("Existing applications\n\n");
-		GlobalSettings.printScreenTitle(title);
+		PrintSettings.printScreenTitle(title);
 		
 		try {
+			// Get a list of the personal loan applications of the current user
 			loanApplications = aService.getLoanApplications(currentUser);
 			
 			// Set the format so that we can print a table
 			String format = "|%15s|%8s|%16s|%19s|\n";
 			
-			GlobalSettings.CONSOLE.printf("\n\nOpen Personal Loan Applications\n");
-			GlobalSettings.CONSOLE.printf(format.replace("%", "%-"), "Application ID", "Loan ID", "Value Requested", "Application Status");
-			GlobalSettings.CONSOLE.printf(format, "--------------", "-------", "---------------", "------------------");
+			// Print the table headers for open personal loan applications
+			PrintSettings.CONSOLE.printf("\n\nOpen Personal Loan Applications\n");
+			PrintSettings.CONSOLE.printf(format.replace("%", "%-"), "Application ID", "Loan ID", "Value Requested", "Application Status");
+			PrintSettings.CONSOLE.printf(format, "--------------", "-------", "---------------", "------------------");
 			
+			// Print the information about all open personal loan applications
 			for(PersonalLoanApplication application : loanApplications) {
 				if(application.getApplicationStatus().equals("U") || application.getApplicationStatus().equals("A")) {
 					String applicationId = Integer.toString(application.getApplicantId());
@@ -203,14 +268,16 @@ public class ApplicantScreen {
 					String requestedValue = "£" + Double.toString(application.getLoanValue());
 					String status = application.getApplicationStatus().equals("U") ? "Unchecked" : "Awaiting approval";
 					
-					GlobalSettings.CONSOLE.printf(format, applicationId, loanId, requestedValue, status);
+					PrintSettings.CONSOLE.printf(format, applicationId, loanId, requestedValue, status);
 				}
 			}
 			
-			GlobalSettings.CONSOLE.printf("\nClosed Personal Loan Applications\n");
-			GlobalSettings.CONSOLE.printf(format.replace("%", "%-"), "Application ID", "Loan ID", "Value Requested", "Application Status");
-			GlobalSettings.CONSOLE.printf(format, "--------------", "-------", "---------------", "------------------");
+			// Print the table headers for closed or rejected personal loan applications
+			PrintSettings.CONSOLE.printf("\nClosed Personal Loan Applications\n");
+			PrintSettings.CONSOLE.printf(format.replace("%", "%-"), "Application ID", "Loan ID", "Value Requested", "Application Status");
+			PrintSettings.CONSOLE.printf(format, "--------------", "-------", "---------------", "------------------");
 			
+			// Print the information about all closed or rejected personal loan applications
 			for(PersonalLoanApplication application : loanApplications) {
 				if(application.getApplicationStatus().equals("C") || application.getApplicationStatus().equals("R")) {
 					String applicationId = Integer.toString(application.getApplicantId());
@@ -218,11 +285,11 @@ public class ApplicantScreen {
 					String requestedValue = "£" + Double.toString(application.getLoanValue());
 					String status = application.getApplicationStatus().equals("C") ? "Approved" : "Rejected";
 					
-					GlobalSettings.CONSOLE.printf(format, applicationId, loanId, requestedValue, status);
+					PrintSettings.CONSOLE.printf(format, applicationId, loanId, requestedValue, status);
 				}
 			}
 		}catch (NoResultsFoundException e) {
-			GlobalSettings.CONSOLE.printf("No personal loan applications were found\n");
+			PrintSettings.CONSOLE.printf("No personal loan applications were found\n");
 		}
 		
 		try {
@@ -231,10 +298,12 @@ public class ApplicantScreen {
 			// Set the format so that we can print a table
 			String format = "|%15s|%12s|%16s|%13s|%19s|\n";
 			
-			GlobalSettings.CONSOLE.printf("\n\nOpen Mortgage Applications\n");
-			GlobalSettings.CONSOLE.printf(format.replace("%", "%-"), "Application ID", "Mortgage ID", "Value Requested", "Deposit", "Application Status");
-			GlobalSettings.CONSOLE.printf(format, "--------------", "-----------", "---------------", "------------", "------------------");
+			// Print the table headers for open mortgage applications
+			PrintSettings.CONSOLE.printf("\n\nOpen Mortgage Applications\n");
+			PrintSettings.CONSOLE.printf(format.replace("%", "%-"), "Application ID", "Mortgage ID", "Value Requested", "Deposit", "Application Status");
+			PrintSettings.CONSOLE.printf(format, "--------------", "-----------", "---------------", "------------", "------------------");
 			
+			// Print the information about all open mortgage applications
 			for(MortgageApplication application : mortgageApplications) {
 				if(application.getApplicationStatus().equals("U") || application.getApplicationStatus().equals("A")) {
 					String applicationId = Integer.toString(application.getApplicantId());
@@ -243,14 +312,16 @@ public class ApplicantScreen {
 					String deposit = "£" + Double.toString(application.getDepositAmount());
 					String status = application.getApplicationStatus().equals("U") ? "Unchecked" : "Awaiting approval";
 					
-					GlobalSettings.CONSOLE.printf(format, applicationId, loanId, requestedValue, deposit, status);
+					PrintSettings.CONSOLE.printf(format, applicationId, loanId, requestedValue, deposit, status);
 				}
 			}
 			
-			GlobalSettings.CONSOLE.printf("\nClosed Mortgage Applications\n");
-			GlobalSettings.CONSOLE.printf(format.replace("%", "%-"), "Application ID", "Mortgage ID", "Value Requested", "Deposit", "Application Status");
-			GlobalSettings.CONSOLE.printf(format, "--------------", "-----------", "---------------", "------------", "------------------");
+			// Print the table headers for closed or rejected mortgage applications
+			PrintSettings.CONSOLE.printf("\nClosed Mortgage Applications\n");
+			PrintSettings.CONSOLE.printf(format.replace("%", "%-"), "Application ID", "Mortgage ID", "Value Requested", "Deposit", "Application Status");
+			PrintSettings.CONSOLE.printf(format, "--------------", "-----------", "---------------", "------------", "------------------");
 			
+			// Print the information about all closed or rejected mortgage applications
 			for(MortgageApplication application : mortgageApplications) {
 				if(application.getApplicationStatus().equals("C") || application.getApplicationStatus().equals("R")) {
 					String applicationId = Integer.toString(application.getApplicantId());
@@ -259,11 +330,11 @@ public class ApplicantScreen {
 					String deposit = "£" + Double.toString(application.getDepositAmount());
 					String status = application.getApplicationStatus().equals("C") ? "Approved" : "Rejected";
 					
-					GlobalSettings.CONSOLE.printf(format, applicationId, loanId, requestedValue, deposit, status);
+					PrintSettings.CONSOLE.printf(format, applicationId, loanId, requestedValue, deposit, status);
 				}
 			}
 		}catch (NoResultsFoundException e) {
-			GlobalSettings.CONSOLE.printf("No mortgage applications were found\n");
+			PrintSettings.CONSOLE.printf("No mortgage applications were found\n");
 		}
 	}
 }

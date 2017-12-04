@@ -1,7 +1,5 @@
 package com.fairsail.applications;
 
-import com.fairsail.accounts.Applicant;
-
 public class MortgageApplication extends Application{
 	
 	private int mortgageId = 0;
@@ -10,8 +8,8 @@ public class MortgageApplication extends Application{
 	
 	public MortgageApplication() {}
 	
-	public MortgageApplication(Applicant applicant, int mortgageId) {
-		setApplicant(applicant);
+	public MortgageApplication(int applicantId, int mortgageId) {
+		this.setApplicantId(applicantId);
 		this.mortgageId = mortgageId;
 	}
 

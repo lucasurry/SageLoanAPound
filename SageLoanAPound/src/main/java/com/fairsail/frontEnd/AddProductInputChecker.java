@@ -5,14 +5,14 @@ import com.fairsail.loan.Mortgage;
 import com.fairsail.loan.PersonalLoan;
 import com.fairsail.loan.SecuredLoan;
 import com.fairsail.loan.UnsecuredLoan;
-import com.fairsail.utils.GlobalSettings;
+import com.fairsail.utils.PrintSettings;
 
 public class AddProductInputChecker {
 
 	/**
+	 * A method to run checks on user input of personal loan details
 	 * 
-	 * 
-	 * @return
+	 * @return PersonalLoan
 	 */
 	public PersonalLoan checkPersonalLoanInput() {
 		PersonalLoan personalLoan = new PersonalLoan();
@@ -23,6 +23,9 @@ public class AddProductInputChecker {
 		return personalLoan;
 	}
 	
+	/*
+	 * A method to run checks on user input of unsecured loan details
+	 */
 	private void addUnsecuredLoan(UnsecuredLoan unsecuredLoan) {
 		// Set the base object of loan values
 		addLoan(unsecuredLoan);
@@ -30,9 +33,9 @@ public class AddProductInputChecker {
 	}
 	
 	/**
+	 * A method to run checks on user input of mortgages details
 	 * 
-	 * 
-	 * @return
+	 * @return Mortgage
 	 */
 	public Mortgage checkMortgageInput() {
 		Mortgage mortgage = new Mortgage();
@@ -47,18 +50,18 @@ public class AddProductInputChecker {
 		isValid = false;
 		while(!isValid) {
 			try {
-				double fees = Double.parseDouble(GlobalSettings.CONSOLE.readLine("Enter the fee for this product (pounds and pence) : \n"));
+				double fees = Double.parseDouble(PrintSettings.CONSOLE.readLine("Enter the fee for this product (pounds and pence) : \n"));
 				mortgage.setFees(fees);
 				isValid = true;
 			}catch(NumberFormatException e){
-				GlobalSettings.CONSOLE.printf("The fee value has to be just a number\n");
+				PrintSettings.CONSOLE.printf("The fee value has to be just a number\n");
 			}
 		}
 	
 		// Find out if the product is for first time buyers only
 		isValid = false;
 		while(!isValid) {
-			String input =  GlobalSettings.CONSOLE.readLine("Is the product for first time buyers only? (Y/N) : \n");
+			String input =  PrintSettings.CONSOLE.readLine("Is the product for first time buyers only? (Y/N) : \n");
 			
 			switch(input) {
 				case "Y" : case "y" : mortgage.setFirstTimeBuyerOnly(true);
@@ -67,13 +70,16 @@ public class AddProductInputChecker {
 				case "N" : case "n" : mortgage.setFirstTimeBuyerOnly(false);
 				  					  isValid = true;
 				  					  break;
-				default : GlobalSettings.CONSOLE.printf("Valid inputs are Y or N\n");
+				default : PrintSettings.CONSOLE.printf("Valid inputs are Y or N\n");
 			}
 		}	
 			
 		return mortgage;
 	}
 	
+	/*
+	 * A method to run checks on user input of secured loan details
+	 */
 	private void addSecuredLoan(SecuredLoan securedLoan) {
 		boolean isValid = false;
 		
@@ -84,7 +90,7 @@ public class AddProductInputChecker {
 		// Find out if the minimum deposit is a percentage or fixed value
 				isValid = false;
 				while(!isValid) {
-					String input =  GlobalSettings.CONSOLE.readLine("Is the deposit a percentage of the product? (Y/N) : \n");
+					String input =  PrintSettings.CONSOLE.readLine("Is the deposit a percentage of the product? (Y/N) : \n");
 					
 					switch(input) {
 						case "Y" : case "y" : securedLoan.setMinDepositIsPercent(true);
@@ -93,7 +99,7 @@ public class AddProductInputChecker {
 						case "N" : case "n" : securedLoan.setMinDepositIsPercent(false);
 						  					  isValid = true;
 						  					  break;
-						default : GlobalSettings.CONSOLE.printf("Valid inputs are Y if the deposit is a percentage or N if it is a fixed value\n");
+						default : PrintSettings.CONSOLE.printf("Valid inputs are Y if the deposit is a percentage or N if it is a fixed value\n");
 					}
 				}
 		
@@ -101,17 +107,17 @@ public class AddProductInputChecker {
 		isValid = false;
 		while(!isValid) {
 			try {
-				double minDeposit = Double.parseDouble(GlobalSettings.CONSOLE.readLine("Enter the minimum deposit, either in percent or a fixed value (just numbers) : \n"));
+				double minDeposit = Double.parseDouble(PrintSettings.CONSOLE.readLine("Enter the minimum deposit, either in percent or a fixed value (just numbers) : \n"));
 				securedLoan.setMinimumDeposit(minDeposit);
 				isValid = true;
 			}catch(NumberFormatException e){
-				GlobalSettings.CONSOLE.printf("The deposit value has to be just a number\n");
+				PrintSettings.CONSOLE.printf("The deposit value has to be just a number\n");
 			}
 		}
 	}
 	
 	/*
-	 * Set the values for the base loan object which everythign is based off
+	 * A method to run checks on user input of loan details
 	 */
 	private void addLoan(Loan loan) {
 		boolean isValid = false;
@@ -119,10 +125,10 @@ public class AddProductInputChecker {
 		// Check that the lender name is not too long
 		isValid = false;
 		while(!isValid) {
-			String lender = GlobalSettings.CONSOLE.readLine("Enter the lender : \n");
+			String lender = PrintSettings.CONSOLE.readLine("Enter the lender : \n");
 			
 			if(lender.length() > 20) {
-				GlobalSettings.CONSOLE.printf("Lender name is too long, max 20 characters\n");
+				PrintSettings.CONSOLE.printf("Lender name is too long, max 20 characters\n");
 			}else {
 				loan.setLender(lender);
 				isValid = true;
@@ -133,17 +139,17 @@ public class AddProductInputChecker {
 		isValid = false;
 		while(!isValid) {
 			try {
-				int repaymentMonths = Integer.parseInt(GlobalSettings.CONSOLE.readLine("Enter the repayment period in months : \n"));
+				int repaymentMonths = Integer.parseInt(PrintSettings.CONSOLE.readLine("Enter the repayment period in months : \n"));
 				
 				// Check that repayment months have been set and not set to 0 (can do both in one as default is 0)
 				switch(repaymentMonths){
-					case 0		: GlobalSettings.CONSOLE.printf("Repayment must be more than 0\n");
+					case 0		: PrintSettings.CONSOLE.printf("Repayment must be more than 0\n");
 								  break;
 					default		: loan.setRepaymentMonths(repaymentMonths);
 								  isValid = true;
 				}
 			}catch(NumberFormatException e){
-				GlobalSettings.CONSOLE.printf("The period has to be a whole number of months\n");
+				PrintSettings.CONSOLE.printf("The period has to be a whole number of months\n");
 			}
 		}
 		
@@ -151,11 +157,11 @@ public class AddProductInputChecker {
 		isValid = false;
 		while(!isValid) {
 			try {
-				int minCreditScore = Integer.parseInt(GlobalSettings.CONSOLE.readLine("Enter the minimum credit score for this product : \n"));
+				int minCreditScore = Integer.parseInt(PrintSettings.CONSOLE.readLine("Enter the minimum credit score for this product : \n"));
 				loan.setMinimumCreditScore(minCreditScore);
 				isValid = true;
 			}catch(NumberFormatException e){
-				GlobalSettings.CONSOLE.printf("The minimum credit score has to be a whole number\n");
+				PrintSettings.CONSOLE.printf("The minimum credit score has to be a whole number\n");
 			}
 		}
 		
@@ -163,11 +169,11 @@ public class AddProductInputChecker {
 		isValid = false;
 		while(!isValid) {
 			try {
-				double rate = Double.parseDouble(GlobalSettings.CONSOLE.readLine("Please enter the interest rate : \n"));
+				double rate = Double.parseDouble(PrintSettings.CONSOLE.readLine("Please enter the interest rate : \n"));
 				loan.setInterestRate(rate);
 				isValid = true;
 			}catch(NumberFormatException e){
-				GlobalSettings.CONSOLE.printf("The fee interest rate has to be just a number\n");
+				PrintSettings.CONSOLE.printf("The fee interest rate has to be just a number\n");
 			}
 		}
 		
@@ -175,15 +181,15 @@ public class AddProductInputChecker {
 		isValid = false;
 		while(!isValid) {
 			try {
-				double minValue = Double.parseDouble(GlobalSettings.CONSOLE.readLine("Enter the minimum loan value for this product (pounds and pence) : \n"));
+				double minValue = Double.parseDouble(PrintSettings.CONSOLE.readLine("Enter the minimum loan value for this product (pounds and pence) : \n"));
 				if(minValue <= 0) {
-					GlobalSettings.CONSOLE.printf("The minimum loan value has to be at least 1\n");
+					PrintSettings.CONSOLE.printf("The minimum loan value has to be at least 1\n");
 				}else {
 					loan.setMinimumValue(minValue);
 					isValid = true;
 				}
 			}catch(NumberFormatException e){
-				GlobalSettings.CONSOLE.printf("The minimum loan value has to be just a number\n");
+				PrintSettings.CONSOLE.printf("The minimum loan value has to be just a number\n");
 			}
 		}
 		
@@ -191,42 +197,44 @@ public class AddProductInputChecker {
 		isValid = false;
 		while(!isValid) {
 			try {
-				double maxValue = Double.parseDouble(GlobalSettings.CONSOLE.readLine("Enter the maximum loan value for this product (pounds and pence) : \n"));
+				double maxValue = Double.parseDouble(PrintSettings.CONSOLE.readLine("Enter the maximum loan value for this product (pounds and pence) : \n"));
 				
 				if(loan.getMaximumValue() > maxValue) {
-					GlobalSettings.CONSOLE.printf("The maximum loan value has to be greater than or equal to the minimum loan value\n");
+					PrintSettings.CONSOLE.printf("The maximum loan value has to be greater than or equal to the minimum loan value\n");
 				}else {
 					loan.setMaximumValue(maxValue);
 					isValid = true;
 				}
 			}catch(NumberFormatException e){
-				GlobalSettings.CONSOLE.printf("The maximum loan value has to be just a number\n");
+				PrintSettings.CONSOLE.printf("The maximum loan value has to be just a number\n");
 			}
 		}
 		
 		// Get the rule to use to work out which credit score to use
+		// Loop until we have a vaild input
 		isValid = false;
 		while(!isValid) {
 
-			GlobalSettings.CONSOLE.printf("\nPlease enter the rule from below which you wish to use to get the credit score for this product\n");
-			GlobalSettings.CONSOLE.printf("  lowest		- lowest credit score\n");
-			GlobalSettings.CONSOLE.printf("  highest	- highest credit score\n");
-			GlobalSettings.CONSOLE.printf("  average	- average of all the credit scores\n");
+			PrintSettings.CONSOLE.printf("\nPlease enter the rule from below which you wish to use to get the credit score for this product\n");
+			PrintSettings.CONSOLE.printf("  lowest		- lowest credit score\n");
+			PrintSettings.CONSOLE.printf("  highest	- highest credit score\n");
+			PrintSettings.CONSOLE.printf("  average	- average of all the credit scores\n");
 			// this is creditsource and creditsource2 for ease but would be experian or similar
-			GlobalSettings.CONSOLE.printf("  source	  	- name of the sourtce of the credit score (creditsource or creditsource2)\n\n");
+			PrintSettings.CONSOLE.printf("  source	  	- name of the sourtce of the credit score (creditsite or creditsite2)\n\n");
 			
-			String input = GlobalSettings.CONSOLE.readLine("Enter the maximum loan value for this product (pounds and pence) : \n");
+			String input = PrintSettings.CONSOLE.readLine("Enter the maximum loan value for this product (pounds and pence) : \n");
 			
+			// Check the user input is valid
 			if(input.equalsIgnoreCase("lowest") || 
 					input.equalsIgnoreCase("highest") || 
 					input.equalsIgnoreCase("average") || 
-					input.equalsIgnoreCase("creditsource") || 
-					input.equalsIgnoreCase("creditsource2")) 
+					input.equalsIgnoreCase("creditsite") || 
+					input.equalsIgnoreCase("creditsite2")) 
 			{
 				loan.setCreditScoreRule(input);
 				isValid = true;
 			}else {
-				GlobalSettings.CONSOLE.printf(input + " is not in the list of valid options\n");
+				PrintSettings.CONSOLE.printf(input + " is not in the list of valid options\n");
 			}
 		}
 	}
